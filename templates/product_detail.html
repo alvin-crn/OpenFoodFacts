@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produit</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
+    crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center">Produit: {{ product.product_name }}</h1>
+
+        <div class="card mb-4">
+            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.product_name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.product_name }}</h5>
+                <p class="card-text"><strong>Marque:</strong> {{ product.brands }}</p>
+                <p class="card-text"><strong>Catégories:</strong> {{ product.categories }}</p>
+                <p class="card-text"><strong>Ingrédients:</strong> {{ product.ingredients_text }}</p>
+                <p class="card-text"><strong>Nutri-Score:</strong> {{ product.nutrition_grades }}</p>
+            </div>
+        </div>
+
+        <h2>Produits similaires (Nutri-Score A):</h2>
+        <div class="row">
+            {% for similar_product in similar_products %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="{{ similar_product['image_url'] }}" class="card-img-top"
+                        alt="{{ similar_product['product_name'] }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ similar_product['product_name'] }}</h5>
+                        <p class="card-text"><strong>Marque:</strong> {{ similar_product['brands'] }}</p>
+                        <p class="card-text"><strong>Nutri-Score:</strong> {{ similar_product['nutrition_grades'] }}</p>
+                        <form action="{{ url_for('add_substitute') }}" method="post">
+                            <input type="hidden" name="original_product_barcode" value="{{ product['_id'] }}">
+                            <input type="hidden" name="substitute_product_barcode" value="{{ similar_product['code'] }}">
+                            <button type="submit" class="btn btn-primary">Créer un substitut</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Lien vers le script Bootstrap (nécessaire pour les composants interactifs comme les modales, les dropdowns, etc.) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pzjw8f+ua7Kw1TIq0p3bHdYZ4MZnb4h1jFQp7UGQ7A4GbTg7Whb3pzcb22shlP0d"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

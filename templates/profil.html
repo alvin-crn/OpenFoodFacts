@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/profil.css') }}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
+    crossorigin="anonymous">
+  <title>Mon Profil</title>
+</head>
+
+<body>
+  <div class="row py-5 px-4">
+    <div class="col-md-5 mx-auto"> <!-- Profile widget -->
+      <div class="bg-white shadow rounded overflow-hidden">
+        <div class="px-4 pt-0 pb-4 cover">
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          <ul>
+            {% for message in messages %}
+            <li style="color: red;">{{ message }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% endwith %}
+          <a href="{{ url_for('home') }}">
+            <div class="go">Retour</div>
+          </a>
+          <div class="media align-items-end profile-head">
+            <div class="profile mr-3"><img
+                src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80"
+                alt="..." width="130" class="rounded mb-2 img-thumbnail"><a href="#"
+                class="btn btn-outline-dark btn-sm btn-block">Modifier mon profil</a></div>
+            <div class="media-body mb-5 text-white">
+              <h4 class="mt-0 mb-0">{{ user_data['username'] }}</h4>
+              <p class="small mb-4">{{ user_data['email'] }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-light p-4 d-flex justify-content-end text-center">
+          <p style="margin-top: 50px;">Nous a rejoint le : {{ user_data['created_at'] }}</p>
+        </div>
+        <div class="px-4 py-3">
+          <h5 class="mb-0">Mes Allergènes</h5>
+          <div class="p-4 rounded shadow-sm bg-light">
+            <ul id="allergen-list">
+              {% for allergen in user_data['allergens'] %}
+              <li>{{ allergen }} <a href="{{ url_for('remove_allergen', allergen_name=allergen) }}">Supprimer</a></li>
+              {% else %}
+              <p>Aucun allergène ajouté.</p>
+              {% endfor %}
+            </ul>
+
+            <form method="POST" action="/add_allergen">
+              <label for="new_allergen">Ajouter un allergène :</label>
+              <select id="new_allergen" name="new_allergen">
+                {% for allergen in allergens_list %}
+                <option value="{{ allergen }}">{{ allergen }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit">Ajouter</button>
+            </form>
+          </div>
+        </div>
+        <div class="py-4 px-4">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 class="mb-0">Substituts enregistrés</h5>
+          </div>
+          <div class="row">
+            {% for substitute in substitutes %}
+            <div class="col-lg-6 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">Produit Original</h5>
+                  <img src="{{ substitute.original_product.image_url or 'https://via.placeholder.com/150' }}"
+                    alt="Produit original" class="img-fluid rounded mb-3">
+                  <p><strong>Nom :</strong> {{ substitute.original_product.product_name or 'Non disponible' }}</p>
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">Substitut</h5>
+                  <img src="{{ substitute.substitute_product.image_url or 'https://via.placeholder.com/150' }}"
+                    alt="Substitut" class="img-fluid rounded mb-3">
+                  <p><strong>Nom :</strong> {{ substitute.substitute_product.product_name or 'Non disponible' }}</p>
+                  <form action="{{ url_for('delete_substitute') }}" method="post">
+                    <input type="hidden" name="substitute_id" value="{{ substitute['_id'] }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

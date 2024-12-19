@@ -3639,3 +3639,8 @@ a.text-error:visited {
   word-break: break-word;
   word-wrap: break-word;
 }
+
+#little-title {
+  font-size: 10px;
+  margin-left: 8px;
+}

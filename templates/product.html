@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recherche</title>
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"
+    crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container mt-4">
+    <h1>Recherche OpenFoodFacts</h1>
+    <form method="POST" class="mt-4">
+      <!-- Recherche par code-barres -->
+      <div class="mb-3">
+        <label for="search_code" class="form-label">Recherche par code-barres :</label>
+        <input type="text" name="query" class="form-control" id="search_code" placeholder="Exemple : 737628064502">
+        <input type="hidden" name="search_type" value="code">
+        <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+      </div>
+    </form>
+
+    <form method="POST" class="mt-4">
+      <!-- Recherche par nom -->
+      <div class="mb-3">
+        <label for="search_name" class="form-label">Recherche par nom :</label>
+        <input type="text" name="query" class="form-control" id="search_name" placeholder="Exemple : Coca-Cola">
+        <input type="hidden" name="search_type" value="name">
+        <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+      </div>
+    </form>
+
+    <form method="POST" class="mt-4">
+      <!-- Recherche par catégorie -->
+      <div class="mb-3">
+        <label for="search_category" class="form-label">Recherche par catégorie :</label>
+        <input type="text" name="query" class="form-control" id="search_category" placeholder="Exemple : Snacks">
+        <input type="hidden" name="search_type" value="category">
+        <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+      </div>
+    </form>
+
+    <div class="container mt-5">
+      <h1>Résultats de recherche</h1>
+      {% if results %}
+      <div class="row">
+        {% for product in results %}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <img src="{{ product.image_url or 'https://via.placeholder.com/150' }}" class="card-img-top"
+              alt="Image du produit">
+            <div class="card-body">
+              <h5 class="card-title">{{ product.product_name or 'Nom non disponible' }}</h5>
+              <p class="card-text">
+                <strong>Catégories : </strong> {{ product.categories or 'Non disponible' }}<br>
+                <strong>Ingrédients : </strong> {{ product.ingredients_text or 'Non disponible' }}<br>
+                <strong>Allergènes : </strong>
+                {% if product.allergens_tags %}
+                {{ product.allergens_tags | join(', ') }}
+                {% else %}
+                Non disponible
+                {% endif %}
+                <br>
+                <strong>Nutriscore : </strong>
+                {% if product.nutriscore_data and product.nutriscore_data.grade %}
+                {{ product.nutriscore_data.grade }}
+                {% else %}
+                Non disponible
+                {% endif %}
+                <br>
+                <strong>Nova Group : </strong> {{ product.nova_group or 'Non disponible' }}<br>
+              </p>
+              <form action="{{ url_for('product_detail', product_code=product.code) }}" method="get">
+                <button type="submit">Trouver un substitut</button>
+              </form>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p>Aucun produit trouvé pour la recherche : "{{ search_type }}"</p>
+      {% endif %}
+      <a href="/" class="btn btn-secondary mt-4">Retour</a>
+    </div>
+  </div>
+</body>
+
+</html>
